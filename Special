@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <style>
+        :root {
+            --accent-color: #fce4ec;
+            --btn-color: #f48fb1;
+            --text-light: #ffffff;
+            --glass-bg: rgba(20, 20, 25, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif;
+        }
+
+        body {
+            background-color: #050505;
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Background Video */
+        #bg-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            z-index: -1;
+            display: none; /* Hidden on login screen */
+            object-fit: cover;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+            animation: fadeIn 1s forwards;
+        }
+
+        /* Glassmorphism Containers */
+        .glass-box {
+            background: var(--glass-bg);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        /* Forms & Inputs */
+        h2 { margin-bottom: 10px; font-weight: normal; font-style: italic; }
+        .hint { font-size: 0.85rem; color: #ccc; margin-bottom: 25px; }
+        
+        input {
+            width: 80%;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--btn-color);
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+        }
+
+        .error-msg {
+            color: #ff5252;
+            font-size: 0.85rem;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* Buttons */
+        button {
+            background: transparent;
+            color: var(--btn-color);
+            border: 1px solid var(--btn-color);
+            padding: 10px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: 0.3s;
+            margin: 5px;
+        }
+        button:hover {
+            background: var(--btn-color);
+            color: #000;
+        }
+
+        /* Q&A Section specific */
+        .wish-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: var(--accent-color);
+        }
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        .hidden-step { display: none; margin-top: 20px; }
+        .instruction { font-size: 0.8rem; color: #bbb; margin-bottom: 5px; display: block; }
+
+        /* Poems Section */
+        .poem-container {
+            display: none;
+            font-size: 1.25rem;
+            line-height: 2;
+            animation: fadeIn 1s forwards;
+        }
+        .poem-container.active-poem {
+            display: block;
+        }
+        
+        /* Navigation Arrows */
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            user-select: none;
+            transition: 0.3s;
+            padding: 20px;
+            z-index: 10;
+        }
+        .arrow:hover { color: white; text-shadow: 0 0 10px white; }
+        .left-arrow { left: 10px; }
+        .right-arrow { right: 10px; }
+
+        /* Shadow Text at bottom */
+        .miss-you {
+            position: absolute;
+            bottom: 30px;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .glass-box { padding: 30px 20px; }
+            .poem-container { font-size: 1.05rem; line-height: 1.8; }
+            .arrow { font-size: 2rem; padding: 10px; }
+            .left-arrow { left: 0px; }
+            .right-arrow { right: 0px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND VIDEO -->
+    <video id="bg-video" loop playsinline>
+        <source src="video.mp4" type="video/mp4">
+    </video>
+
+    <!-- PAGE 1: LOGIN -->
+    <div id="login-screen" class="screen active">
+        <div class="glass-box">
+            <h2>For your eyes only</h2>
+            <p class="hint">Hint: your name in all caps + your DOB(DDMM)</p>
+            
+            <input type="password" id="password-input" placeholder="Enter Password">
+            <div id="pwd-error" class="error-msg">Incorrect password.</div>
+            
+            <br>
+            <button onclick="checkPassword()">Unlock</button>
+        </div>
+    </div>
+
+    <!-- PAGE 2: Q&A / WISH -->
+    <div id="qna-screen" class="screen">
+        <div class="glass-box">
+            <p class="wish-text">Happy birthday to my favorite person. <br>Life is just better with you in it.</p>
+            
+            <div id="q1-box">
+                <p class="question">Do u Know me?</p>
+                <div id="q1-buttons">
+                    <button onclick="handleQ1(true)">Yes</button>
+                    <button onclick="handleQ1(false)">No</button>
+                </div>
+            </div>
+
+            <div id="q2-box" class="hidden-step">
+                <p class="question">Can u name?</p>
+                <div id="q2-buttons">
+                    <button onclick="handleQ2(true)">Yes</button>
+                    <button onclick="handleQ2(false)">No</button>
+                </div>
+            </div>
+
+            <div id="name-box" class="hidden-step">
+                <span class="instruction">1st name only, 1st letter capital</span>
+                <input type="text" id="name-input" placeholder="Type here...">
+                <div id="name-error" class="error-msg">That's not right. Try again.</div>
+                <button onclick="checkName()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3: POEMS -->
+    <div id="poems-screen" class="screen">
+        <div class="arrow left-arrow" onclick="togglePoem()">&#10094;</div>
+        <div class="arrow right-arrow" onclick="togglePoem()">&#10095;</div>
+
+        <div class="glass-box">
+            <div id="poem1" class="poem-container active-poem">
+                all this I did without you,<br>
+                this was my loss,<br>
+                all this I want to do,<br>
+                with you,<br>
+                this will be my gain,<br>
+                all this I would gladly have<br>
+                forgone for the sake of one<br>
+                minute<br>
+                of your company,<br>
+                for your laugh your voice<br>
+                your eyes hair<br>
+                lips body,<br>
+                and above all for your sweet<br>
+                ever surprising mind<br>
+                which is an enchanting quarry in<br>
+                which it is my privilege<br>
+                to delve
+            </div>
+
+            <div id="poem2" class="poem-container">
+                I can Turn You into Poetry,<br>
+                make the moon Jealous of you,<br>
+                make the sky blush when you smile,<br>
+                make my pen believe you are<br>
+                a Goddess.<br><br>
+                <span style="font-style: italic; color: #f48fb1;">But I Cannot Make you Love me</span>
+            </div>
+        </div>
+
+        <div class="miss-you">I miss u a lot</div>
+    </div>
+
+    <script>
+        document.getElementById("password-input").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") checkPassword();
+        });
+
+        document.getElementById("name-input").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") checkName();
+        });
+
+        function checkPassword() {
+            const pwd = document.getElementById("password-input").value;
+            const error = document.getElementById("pwd-error");
+            
+            if (pwd.toLowerCase() === "satakshi1409") {
+                error.style.display = "none";
+                
+                document.getElementById("login-screen").classList.remove("active");
+                document.getElementById("qna-screen").classList.add("active");
+                
+                const video = document.getElementById("bg-video");
+                video.style.display = "block";
+                video.play().catch(e => console.log("Video autoplay blocked, but should work on click.", e));
+            } else {
+                error.style.display = "block";
+                document.getElementById("password-input").value = "";
+            }
+        }
+
+        function handleQ1(isYes) {
+            if(isYes) {
+                document.getElementById("q1-buttons").style.display = "none";
+                document.getElementById("q2-box").style.display = "block";
+            } else {
+                alert("Think harder! 😉");
+            }
+        }
+
+        function handleQ2(isYes) {
+            if(isYes) {
+                document.getElementById("q2-buttons").style.display = "none";
+                document.getElementById("name-box").style.display = "block";
+            } else {
+                alert("Take a guess!");
+            }
+        }
+
+        function checkName() {
+            const name = document.getElementById("name-input").value;
+            const error = document.getElementById("name-error");
+            
+            if (name === "Arunabha") {
+                error.style.display = "none";
+                document.getElementById("qna-screen").classList.remove("active");
+                document.getElementById("poems-screen").classList.add("active");
+            } else {
+                error.style.display = "block";
+            }
+        }
+
+        function togglePoem() {
+            const poem1 = document.getElementById("poem1");
+            const poem2 = document.getElementById("poem2");
+
+            if (poem1.classList.contains("active-poem")) {
+                poem1.classList.remove("active-poem");
+                poem2.classList.add("active-poem");
+            } else {
+                poem2.classList.remove("active-poem");
+                poem1.classList.add("active-poem");
+            }
+        }
+    </script>
+</body>
+</html>
