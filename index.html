@@ -182,10 +182,19 @@
             .arrow { font-size: 2rem; padding: 10px; }
             .left-arrow { left: 0px; }
             .right-arrow { right: 0px; }
+
+            /* Add these lines to create scrolling space */
+            body, html {
+                overflow-y: auto !important; 
+            }
+            .screen {
+                min-height: 115vh !important; 
+                padding-bottom: 100px !important; 
+            }
         }
     </style>
 </head>
-<body>
+    <body>
 
     <!-- BACKGROUND VIDEO -->
     <video id="bg-video" loop muted playsinline>
